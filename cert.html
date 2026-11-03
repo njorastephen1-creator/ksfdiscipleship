@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discipleship Certificate - Kingdom Seekers Fellowship</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Great+Vibes&family=Georgia&family=Playfair+Display:wght@700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #2c2c2c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Georgia', serif;
+  }
+
+  .certificate-container {
+    width: 816px;
+    height: 1056px;
+    background: #f8f7f4;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  .gold-border {
+    position: absolute;
+    top: 35px;
+    left: 40px;
+    right: 40px;
+    bottom: 35px;
+    border: 2px solid #c8a832;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .corner-top-right,
+  .corner-bottom-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 3;
+    padding: 40px 70px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo-container { margin-top: 10px; margin-bottom: 5px; }
+  .logo-img { width: 95px; height: 95px; border-radius: 50%; object-fit: cover; }
+
+  .fellowship-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: #1a3a8a;
+    letter-spacing: 3px;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+  .address { font-size: 15px; color: #1a3a8a; font-weight: bold; margin-top: 5px; letter-spacing: 1px; }
+  .location { font-size: 17px; color: #1a3a8a; font-weight: bold; margin-top: 2px; letter-spacing: 2px; }
+
+  .certificate-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 56px;
+    color: #1a3a8a;
+    margin-top: 25px;
+    margin-bottom: 5px;
+  }
+
+  .awarded-to { font-size: 19px; font-style: italic; color: #333; margin-top: 15px; }
+
+  .recipient-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #1a3a8a;
+    letter-spacing: 4px;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  .dotted-line {
+    width: 520px;
+    border: none;
+    border-top: 2px dotted #1a3a8a;
+    margin: 8px auto 15px;
+  }
+
+  .course-description { font-size: 15px; color: #222; margin-top: 5px; font-weight: bold; }
+
+  .topics-container {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 18px;
+    width: 100%;
+    max-width: 620px;
+  }
+  .topics-column { text-align: left; flex: 1; }
+  .topic-item { font-size: 15px; color: #333; margin: 7px 0; font-weight: bold; letter-spacing: 0.5px; }
+  .topic-item .number { display: inline-block; width: 25px; }
+
+  .date-text { font-size: 17px; color: #222; margin-top: 22px; font-weight: bold; }
+
+  .signature-area { margin-top: 15px; text-align: center; }
+  .signature-svg { margin-bottom: -5px; }
+  .signature-line { width: 200px; border: none; border-top: 1.5px dotted #555; margin: 0 auto 5px; }
+  .signature-name { font-size: 15px; font-weight: bold; color: #222; letter-spacing: 1px; }
+  .signature-title { font-size: 13px; color: #444; margin-top: 2px; }
+
+  .motto {
+    font-family: 'Great Vibes', cursive;
+    font-size: 28px;
+    color: #222;
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="certificate-container">
+  <div class="gold-border"></div>
+
+  <!-- Top-right swooping arc -->
+  <svg class="corner-top-right" viewBox="0 0 816 1056" xmlns="http://www.w3.org/2000/svg">
+    <!-- Gold band (outer, larger arc) -->
+    <path d="M 430,0 
+             Q 560,100 700,180 
+             Q 770,220 816,240 
+             L 816,0 Z" 
+          fill="#c8a832"/>
+    <!-- Blue fill (inner, smaller arc) -->
+    <path d="M 470,0 
+             Q 580,90 710,165 
+             Q 775,200 816,215 
+             L 816,0 Z" 
+          fill="#1a3a8a"/>
+  </svg>
+
+  <!-- Bottom-left swooping arc -->
+  <svg class="corner-bottom-left" viewBox="0 0 816 1056" xmlns="http://www.w3.org/2000/svg">
+    <!-- Gold band (outer, larger arc) -->
+    <path d="M 0,780 
+             Q 80,870 180,940 
+             Q 290,1010 420,1056 
+             L 0,1056 Z" 
+          fill="#c8a832"/>
+    <!-- Blue fill (inner, smaller arc) -->
+    <path d="M 0,810 
+             Q 70,890 170,955 
+             Q 280,1020 400,1056 
+             L 0,1056 Z" 
+          fill="#1a3a8a"/>
+  </svg>
+
+  <div class="content">
+    <div class="logo-container">
+      <img src="download.jpeg" alt="KSF Logo" class="logo-img">
+    </div>
+
+    <div class="fellowship-name">Kingdom Seekers Fellowship</div>
+    <div class="address">1139-00600</div>
+    <div class="location">NGARA NAIROBI</div>
+
+    <div class="certificate-title">Discipleship Certificate</div>
+    <div class="awarded-to">Awarded To</div>
+    <div class="recipient-name">Stephen Thuo</div>
+    <hr class="dotted-line">
+
+    <div class="course-description">Upon successful completion of the Discipleship Course which entails:-</div>
+
+    <div class="topics-container">
+      <div class="topics-column">
+        <div class="topic-item"><span class="number">1.</span> SALVATION</div>
+        <div class="topic-item"><span class="number">2.</span> TEMPTATIONS</div>
+        <div class="topic-item"><span class="number">3.</span> PRAYERS</div>
+        <div class="topic-item"><span class="number">4.</span> THE BIBLE</div>
+        <div class="topic-item"><span class="number">5.</span> FELLOWSHIP</div>
+      </div>
+      <div class="topics-column">
+        <div class="topic-item"><span class="number">6.</span> BEARING FRUITS/WITNESSING</div>
+        <div class="topic-item"><span class="number">7.</span> BAPTISM</div>
+        <div class="topic-item"><span class="number">8.</span> HOLY SPIRIT</div>
+        <div class="topic-item"><span class="number">9.</span> KINGDOM SERVICE</div>
+        <div class="topic-item"><span class="number">10.</span> DELIVERANCE</div>
+      </div>
+    </div>
+
+    <div class="date-text">on this 5th Day of May, 2024.</div>
+
+    <div class="signature-area">
+      <svg class="signature-svg" width="220" height="70" viewBox="0 0 220 70" xmlns="http://www.w3.org/2000/svg">
+        <!-- Realistic signature with vertical loops -->
+        <path d="M 15,45 L 20,15 L 25,45 L 30,20 L 35,45 L 40,10 L 45,45 
+                 L 50,25 L 55,45 L 60,15 L 65,45 L 70,20 L 75,45 L 80,10 
+                 L 85,45 L 90,25 L 95,45 L 100,15 L 105,45 L 110,20 L 115,45 
+                 L 120,10 L 125,45 L 130,25 L 135,45 L 140,15 L 145,45 
+                 L 150,20 L 155,45 L 160,10 L 165,45 L 170,25 L 175,45 
+                 L 180,15 L 185,45 L 190,20 L 195,45 L 200,10 L 205,45" 
+              fill="none" stroke="#1a3a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Horizontal underline stroke -->
+        <path d="M 10,52 C 60,48 110,46 160,48 C 180,49 200,50 210,51" 
+              fill="none" stroke="#1a3a8a" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <hr class="signature-line">
+      <div class="signature-name">ESSOLLOM KARANJA.</div>
+      <div class="signature-title">Senior Pastor</div>
+    </div>
+
+    <div class="motto">Seek Ye First The Kingdom Of God</div>
+  </div>
+</div>
+
+</body>
+</html>

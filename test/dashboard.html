@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discipleship Tracker | Analytics Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' } } } }
+        }
+    </script>
+    <!-- Chart.js for Visuals -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+        /* Custom filter dropdown styling */
+        .filter-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR (Condensed for focus) -->
+        <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700">
+            <div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-700">
+                <i class="fa-solid fa-church text-primary-600 text-2xl mr-3"></i>
+                <span class="text-xl font-bold text-slate-800 dark:text-white">DiscipleTrack</span>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-4 space-y-1">
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
+                    <i class="fa-solid fa-chart-line w-5 mr-3"></i> Dashboard
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-users w-5 mr-3"></i> Students
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-graduation-cap w-5 mr-3"></i> Exams
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-cog w-5 mr-3"></i> Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- TOPBAR -->
+            <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 sticky top-0 z-30">
+                <h1 class="text-xl font-semibold text-slate-800 dark:text-white">Program Analytics</h1>
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:inline"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Stephen+Thuo&background=4f46e5&color=fff" class="w-8 h-8 rounded-full" alt="Admin">
+                    </div>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE DASHBOARD CONTENT -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+                
+                <!-- 1. FILTER BAR (The Controls) -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <!-- Cohort Filter -->
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Cohort</label>
+                            <select id="filter-cohort" onchange="updateDashboard()" class="filter-select block w-full pl-3 pr-10 py-2 text-sm bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                                <option value="all">All Cohorts</option>
+                                <option value="c1">Cohort 1 (Jan - Apr)</option>
+                                <option value="c2">Cohort 2 (May - Aug)</option>
+                                <option value="c3">Cohort 3 (Sep - Dec)</option>
+                            </select>
+                        </div>
+                        <!-- Teacher Filter -->
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Care Group / Teacher</label>
+                            <select id="filter-teacher" onchange="updateDashboard()" class="filter-select block w-full pl-3 pr-10 py-2 text-sm bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                                <option value="all">All Teachers</option>
+                                <option value="t1">Pastor John (Group A)</option>
+                                <option value="t2">Elder Mary (Group B)</option>
+                                <option value="t3">Deacon Peter (Group C)</option>
+                            </select>
+                        </div>
+                        <!-- Status Filter -->
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Student Status</label>
+                            <select id="filter-status" onchange="updateDashboard()" class="filter-select block w-full pl-3 pr-10 py-2 text-sm bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                                <option value="all">All Students</option>
+                                <option value="active">Active</option>
+                                <option value="atrisk">At-Risk</option>
+                                <option value="grad">Graduated</option>
+                            </select>
+                        </div>
+                        <!-- Action Button -->
+                        <div class="pt-5">
+                            <button class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors">
+                                <i class="fa-solid fa-filter mr-2"></i> Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. SUMMARY CARDS (The "At a Glance" Stats) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1: Total -->
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Total Students</p>
+                                <p class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-total">1,248</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2: Graduated -->
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Graduated</p>
+                                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1" id="stat-grad">420</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3: At Risk -->
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">At-Risk</p>
+                                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-1" id="stat-risk">85</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4: Pending -->
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Pending Reg.</p>
+                                <p class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1" id="stat-pending">12</p>
+                            </div>
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CHARTS ROW 1 (Health & Cohorts) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Chart A: Doughnut (Program Health) -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-1">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4">Program Health</h3>
+                        <div class="relative h-64">
+                            <canvas id="chartHealth"></canvas>
+                        </div>
+                    </div>
+                    <!-- Chart B: Bar (Cohort Comparison) -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-4">Cohort Performance</h3>
+                        <div class="relative h-64">
+                            <canvas id="chartCohorts"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. CHARTS ROW 2 (Bottlenecks & Attendance) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Chart C: Horizontal Bar (Lesson Bottlenecks) -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-1">Lesson Completion Rates</h3>
+                        <p class="text-xs text-slate-500 mb-4">Identify where students get stuck</p>
+                        <div class="relative h-80">
+                            <canvas id="chartBottleneck"></canvas>
+                        </div>
+                    </div>
+                    <!-- Chart D: Line (Attendance Trends) -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-1">Attendance Trends</h3>
+                        <p class="text-xs text-slate-500 mb-4">Physical vs Online participation</p>
+                        <div class="relative h-80">
+                            <canvas id="chartAttendance"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. RECENT ACTIVITY TABLE -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-white">Recent Activity</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="px-6 py-3">Student</th>
+                                    <th class="px-6 py-3">Action</th>
+                                    <th class="px-6 py-3">Lesson / Status</th>
+                                    <th class="px-6 py-3">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                    <td class="px-6 py-4 font-medium text-slate-800 dark:text-white">James Mwangi</td>
+                                    <td class="px-6 py-4 text-slate-500">Completed Lesson</td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded text-xs">04. Baptism</span></td>
+                                    <td class="px-6 py-4 text-slate-500">2 mins ago</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                    <td class="px-6 py-4 font-medium text-slate-800 dark:text-white">Sarah Akinyi</td>
+                                    <td class="px-6 py-4 text-slate-500">Registered</td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded text-xs">Pending</span></td>
+                                    <td class="px-6 py-4 text-slate-500">1 hour ago</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                    <td class="px-6 py-4 font-medium text-slate-800 dark:text-white">David Ochieng</td>
+                                    <td class="px-6 py-4 text-slate-500">Graduated</td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded text-xs">16. Ministry</span></td>
+                                    <td class="px-6 py-4 text-slate-500">Yesterday</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- THEME MANAGEMENT ---
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            // Re-render charts to update text colors
+            initCharts(); 
+        }
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // --- CHART.JS CONFIGURATION ---
+        let chartHealth, chartCohorts, chartBottleneck, chartAttendance;
+
+        function getChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+                text: isDark ? '#cbd5e1' : '#475569',
+                grid: isDark ? '#334155' : '#e2e8f0',
+                tooltipBg: isDark ? '#1e293b' : '#fff',
+                tooltipText: isDark ? '#fff' : '#000'
+            };
+        }
+
+        function initCharts() {
+            const colors = getChartColors();
+            
+            // Destroy existing charts to prevent overlap errors
+            if(chartHealth) chartHealth.destroy();
+            if(chartCohorts) chartCohorts.destroy();
+            if(chartBottleneck) chartBottleneck.destroy();
+            if(chartAttendance) chartAttendance.destroy();
+
+            // Global Defaults
+            Chart.defaults.color = colors.text;
+            Chart.defaults.borderColor = colors.grid;
+
+            // 1. DOUGHNUT: Program Health
+            chartHealth = new Chart(document.getElementById('chartHealth'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Graduated', 'Active', 'At-Risk'],
+                    datasets: [{
+                        data: [420, 743, 85],
+                        backgroundColor: ['#10b981', '#3b82f6', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } }
+                }
+            });
+
+            // 2. BAR: Cohort Comparison (Stacked)
+            chartCohorts = new Chart(document.getElementById('chartCohorts'), {
+                type: 'bar',
+                data: {
+                    labels: ['Cohort 1 (Jan-Apr)', 'Cohort 2 (May-Aug)', 'Cohort 3 (Sep-Dec)'],
+                    datasets: [
+                        { label: 'Graduated', data: [120, 80, 20], backgroundColor: '#10b981' },
+                        { label: 'Active', data: [30, 150, 180], backgroundColor: '#3b82f6' },
+                        { label: 'At-Risk', data: [5, 15, 25], backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, beginAtZero: true }
+                    },
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true } } }
+                }
+            });
+
+            // 3. HORIZONTAL BAR: Bottleneck Analysis
+            chartBottleneck = new Chart(document.getElementById('chartBottleneck'), {
+                type: 'bar',
+                data: {
+                    labels: ['1. Salvation', '2. Baptism', '3. Holy Spirit', '4. Forgiveness', '5. Prayer', '6. Faith'],
+                    datasets: [{
+                        label: 'Completion %',
+                        data: [95, 88, 75, 40, 60, 55], // Notice "Forgiveness" is low!
+                        backgroundColor: (ctx) => {
+                            const value = ctx.raw;
+                            return value < 50 ? '#ef4444' : (value < 80 ? '#f59e0b' : '#10b981');
+                        },
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Makes it horizontal
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { max: 100, ticks: { callback: (v) => v + '%' } },
+                        y: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 4. LINE: Attendance Trends
+            chartAttendance = new Chart(document.getElementById('chartAttendance'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                    datasets: [
+                        {
+                            label: 'Physical',
+                            data: [120, 135, 128, 140, 155, 160, 150, 170],
+                            borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4
+                        },
+                        {
+                            label: 'Online',
+                            data: [40, 45, 50, 48, 60, 75, 80, 95],
+                            borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true } } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // --- FILTER SIMULATION ---
+        function updateDashboard() {
+            // In a real app, you would fetch new data from Firebase here based on the filter values.
+            // For this demo, we just show a visual feedback that the filter "worked".
+            const cohort = document.getElementById('filter-cohort').value;
+            const status = document.getElementById('filter-status').value;
+            
+            // Simulate changing the "Total Students" number based on filter
+            const totalEl = document.getElementById('stat-total');
+            if(cohort !== 'all') {
+                totalEl.innerText = "340"; // Simulated smaller number for specific cohort
+            } else {
+                totalEl.innerText = "1,248";
+            }
+            
+            // Re-render charts to apply theme or new data
+            initCharts(); 
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initCharts);
+    </script>
+</body>
+</html>

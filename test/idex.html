@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Search</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 30px;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    input {
+      width: 70%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #007bff;
+    }
+
+    button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #results {
+      max-width: 600px;
+      margin: 30px auto;
+    }
+
+    .result {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .result h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .score {
+      font-size: 12px;
+      color: #666;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    mark {
+      background-color: #fff3cd;
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="search-box">
+    <h1>Mini Search</h1>
+    <input type="text" id="searchInput" placeholder="Search something...">
+    <button id="searchButton">Search</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const websites = [
+      { title: "Best Smartphones in Kenya", description: "Discover popular smartphones and their prices in Kenya." },
+      { title: "Learn JavaScript", description: "A beginner guide to learning JavaScript programming." },
+      { title: "How WiFi Works", description: "Learn how wireless networks connect your devices." },
+      { title: "Amazing Kenyan Businesses", description: "Discover interesting businesses and entrepreneurs in Kenya." },
+      { title: "How YouTube Works", description: "Learn how videos are uploaded, stored and delivered." },
+      { title: "Build Your First Game", description: "Learn how to create a simple browser game." },
+      { title: "Kenya Phone Buying Guide", description: "Find the best phone deals in Kenya." },
+      { title: "Best Phone Deals in Kenya", description: "Compare affordable smartphones, prices and the latest phone offers in Kenya." },
+      { title: "Kenya Smartphone Buying Guide", description: "Learn how to choose a good smartphone and find the best deals." },
+      { title: "Electronics Shop Kenya", description: "Shop phones, laptops, televisions and other electronics." }
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const resultsBox = document.getElementById("results");
+
+    function highlightText(text, words) {
+      let result = text;
+      words.forEach(word => {
+        const regex = new RegExp(`\\b(${word})\\b`, "gi");
+        result = result.replace(regex, "<mark>$1</mark>");
+      });
+      return result;
+    }
+
+    function performSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      resultsBox.innerHTML = "";
+
+      if (query === "") {
+        resultsBox.innerHTML = "<div class='result'><p>Please enter a search term.</p></div>";
+        return;
+      }
+
+      const words = query.split(/\W+/).filter(w => w);
+
+      const scoredResults = websites.map(site => {
+        let score = 0;
+        const lowerTitle = site.title.toLowerCase();
+        const lowerDesc = site.description.toLowerCase();
+
+        const titleWords = lowerTitle.split(/\W+/).filter(w => w);
+        const descWords = lowerDesc.split(/\W+/).filter(w => w);
+
+        // Word-level scoring
+        words.forEach(word => {
+          if (titleWords.includes(word)) score += 5;
+          if (descWords.includes(word)) score += 2;
+        });
+
+        // Exact phrase bonus
+        if (lowerTitle.includes(query)) score += 10;
+        if (lowerDesc.includes(query)) score += 5;
+
+        return { ...site, score };
+      })
+      .filter(site => site.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+      if (scoredResults.length === 0) {
+        resultsBox.innerHTML = `<div class="result"><p>No results found for "${query}".</p></div>`;
+      } else {
+        resultsBox.innerHTML = scoredResults.map(site => {
+          const highlightedTitle = highlightText(site.title, words);
+          const highlightedDesc = highlightText(site.description, words);
+          return `
+            <div class="result">
+              <div class="score">Relevance Score: ${site.score}</div>
+              <h3>${highlightedTitle}</h3>
+              <p>${highlightedDesc}</p>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    searchButton.addEventListener("click", performSearch);
+
+    searchInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        performSearch();
+      }
+    });
+  </script>
+
+</body>
+</html>
