@@ -697,9 +697,20 @@ function showStudentDetail(id) {
 function closeStudentDetailModal() { document.getElementById('studentDetailModal').classList.add('hidden'); }
 
 function renderDashboard(c) {
-    const total = Object.keys(students).length, grad = Object.entries(students).filter(([id]) => LESSONS.filter(l => isLessonCompleted((progress[id]||{})[l])).length === LESSONS.length).length;
+    if (activeInsightStudentId && students[activeInsightStudentId]) {
+        renderStudentInsight(c, activeInsightStudentId);
+    } else {
+        renderMainDashboard(c);
+    }
+}
+
+function renderMainDashboard(c) {
+    const total = Object.keys(students).length;
+    const grad = Object.entries(students).filter(([id]) => LESSONS.filter(l => isLessonCompleted((progress[id]||{})[l])).length === LESSONS.length).length;
     let totalLessons = 0; Object.keys(students).forEach(id => totalLessons += getStudentProgress(id));
-    const initial = (userData?.name || currentUser.email).charAt(0).toUpperCase(), recent = Object.entries(students).sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
+    const initial = (userData?.name || currentUser.email).charAt(0).toUpperCase();
+    const recent = Object.entries(students).sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
+    
     c.innerHTML = `<div class="dashboard-container">
         <div class="welcome-header">
             <div class="avatar-circle avatar-lg">${initial}</div>
@@ -722,7 +733,7 @@ function renderDashboard(c) {
                     return `<tr><td><div class="student-info"><div class="avatar-circle avatar-sm">${s.name.charAt(0).toUpperCase()}</div><div><div class="font-semibold">${s.name}</div><div class="text-xs text-gray-500">Class ${s.class}</div></div></div></td>
                     <td><div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="text-xs text-gray-500">${comp}/${LESSONS.length}</div></td>
                     <td><span class="status-badge ${statClass}">${statText}</span></td>
-                    <td><button class="action-btn primary" onclick="editingStudentId='${id}';showView('dataEntry')">View</button></td></tr>`;
+                    <td><button class="action-btn primary" onclick="selectStudentForInsight('${id}')">View</button></td></tr>`;
                 }).join('')}</tbody></table>
             </div>
             <div class="schedule-container">
@@ -737,6 +748,89 @@ function renderDashboard(c) {
         </div>
     </div>`;
 }
+
+function renderStudentInsight(c, id) {
+    const s = students[id];
+    if (!s) return;
+    const p = progress[id] || {};
+    const comp = getStudentProgress(id);
+    const pct = Math.round((comp/LESSONS.length)*100);
+    
+    c.innerHTML = `
+        <div class="dashboard-container">
+            <div class="insight-header">
+                <div class="flex items-center gap-4">
+                    <div class="avatar-circle avatar-lg">${s.name.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <h1 class="text-2xl font-bold">${s.name}</h1>
+                        <p class="text-gray-500">Class ${s.class} • ${s.phone}</p>
+                    </div>
+                </div>
+                <button onclick="clearStudentInsight()" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Back to Overview</button>
+            </div>
+            
+            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="stat-card-modern"><div class="stat-icon teal"><i class="fas fa-chart-line"></i></div><div class="stat-value">${pct}%</div><div class="stat-label">Overall Progress</div></div>
+                <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-book"></i></div><div class="stat-value">${comp}/${LESSONS.length}</div><div class="stat-label">Lessons Done</div></div>
+                <div class="stat-card-modern"><div class="stat-icon green"><i class="fas fa-calendar-check"></i></div><div class="stat-value">-</div><div class="stat-label">Attendance</div></div>
+                <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-award"></i></div><div class="stat-value">${s.graduationDate ? 'Yes' : 'No'}</div><div class="stat-label">Graduated</div></div>
+            </div>
+
+            <div class="insight-grid">
+                <div class="chart-container">
+                    <h3 class="font-bold mb-4">Lesson Completion Journey</h3>
+                    <canvas id="studentRadarChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="font-bold mb-4">Progress Breakdown</h3>
+                    <canvas id="studentDoughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Initialize Charts after DOM is updated
+    setTimeout(() => {
+        if (typeof Chart !== 'undefined') {
+            // Radar Chart for Lessons
+            const radarCtx = document.getElementById('studentRadarChart');
+            if (radarCtx) {
+                new Chart(radarCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: LESSONS.slice(0, 8), // Show first 8 for clarity
+                        datasets: [{
+                            label: 'Completed',
+                            data: LESSONS.slice(0, 8).map(l => isLessonCompleted(p[l]) ? 100 : 0),
+                            backgroundColor: 'rgba(45, 106, 79, 0.2)',
+                            borderColor: '#2d6a4f',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100 } } }
+                });
+            }
+
+            // Doughnut Chart for Progress
+            const doughnutCtx = document.getElementById('studentDoughnutChart');
+            if (doughnutCtx) {
+                new Chart(doughnutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completed', 'Remaining'],
+                        datasets: [{
+                            data: [comp, LESSONS.length - comp],
+                            backgroundColor: ['#10b981', '#e5e7eb'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+                });
+            }
+        }
+    }, 100);
+}
+
 
 function renderDataEntry(c) {
     const next = getNextClassNumber(), today = new Date().toISOString().split('T')[0];
