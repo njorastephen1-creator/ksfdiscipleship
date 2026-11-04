@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="./icon.png">
     <link rel="apple-touch-icon" href="./icon.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Great+Vibes&family=Georgia&family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Great+Vibes&family=Georgia&family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS with Dark Mode Config -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -209,7 +209,85 @@
             .table-container { font-size: 12px; }
             .reports-table { min-width: 1400px; }
         }
-    </style>
+    
+:root {
+    --green: #246b4b; --green2: #36966c; --ink: #172b22; --muted: #7a8980;
+    --line: #e7eee9; --bg: #f4f7f5; --white: #fff; --blue: #4389e8;
+    --orange: #f3a43b; --red: #e87575; --shadow: 0 8px 28px rgba(25,60,42,.045);
+}
+.dashboard-container-new { background: var(--bg); padding: 0; box-shadow: none; border-radius: 0; }
+.topbar-new { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+.page-title h1 { font-size: 25px; margin: 0 0 4px; font-weight: 800; letter-spacing: -.7px; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+.page-title p { font-size: 12px; color: var(--muted); margin: 0; font-family: 'DM Sans', sans-serif; }
+.filters-new { background: #fff; border: 1px solid var(--line); border-radius: 15px; padding: 17px 19px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.filter-heading { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; margin-bottom: 13px; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+.filter-heading i { color: var(--green2); }
+.filter-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr auto; gap: 12px; align-items: end; }
+.field label { display: block; color: var(--muted); font-size: 10px; font-weight: 700; margin-bottom: 6px; font-family: 'DM Sans', sans-serif; }
+.field select, .search-new { height: 39px; width: 100%; border: 1px solid var(--line); background: #fbfcfb; border-radius: 8px; padding: 0 11px; color: #405047; font-size: 11px; outline: none; font-family: 'DM Sans', sans-serif; }
+.search-new { display: flex; align-items: center; gap: 8px; }
+.search-new i { color: #98a69d; }
+.search-new input { border: 0; outline: 0; background: transparent; width: 100%; font-size: 11px; font-family: 'DM Sans', sans-serif; }
+.reset-new { height: 39px; border: 1px solid var(--line); background: #fff; color: var(--green); border-radius: 8px; padding: 0 13px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.reset-new:hover { background: var(--green); color: #fff; }
+.stats-new { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin-bottom: 20px; }
+.stat-new { background: #fff; border: 1px solid var(--line); border-radius: 15px; padding: 17px 18px; box-shadow: var(--shadow); min-width: 0; }
+.stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.stat-icon { width: 39px; height: 39px; border-radius: 11px; display: grid; place-items: center; font-size: 15px; }
+.stat-icon.teal { background: #e2f6ec; color: #219466; }
+.stat-icon.blue { background: #e7efff; color: #3978db; }
+.stat-icon.amber { background: #fff3df; color: #d89025; }
+.stat-icon.rose { background: #ffeded; color: #d96b6b; }
+.stat-tag { font-size: 9px; color: #9aa69f; font-weight: 800; letter-spacing: .8px; font-family: 'DM Sans', sans-serif; }
+.stat-value { font-size: 29px; font-weight: 800; letter-spacing: -1px; margin-bottom: 3px; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+.stat-label { font-size: 11px; color: var(--muted); font-weight: 600; font-family: 'DM Sans', sans-serif; }
+.chart-grid-new { display: grid; grid-template-columns: 1.35fr 1fr; gap: 15px; margin-bottom: 16px; }
+.panel-new { background: #fff; border: 1px solid var(--line); border-radius: 15px; padding: 16px; box-shadow: var(--shadow); min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 11px; }
+.panel-head h2 { font-size: 14px; margin: 0 0 4px; font-weight: 800; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+.panel-head p { font-size: 10px; color: var(--muted); margin: 0; font-family: 'DM Sans', sans-serif; }
+.panel-icon { width: 33px; height: 33px; border-radius: 9px; background: #e8f5ed; color: var(--green2); display: grid; place-items: center; }
+.chart-wrap { height: 168px; position: relative; }
+.donut-wrap { height: 168px; max-width: 205px; margin: auto; }
+.bottom-grid-new { display: grid; grid-template-columns: 1.55fr 1fr; gap: 17px; }
+.table-wrap { overflow-x: auto; }
+.students-new { width: 100%; border-collapse: collapse; min-width: 510px; }
+.students-new th { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 9px; color: #87958c; letter-spacing: .5px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
+.students-new td { padding: 13px 8px; border-bottom: 1px solid #f0f3f1; font-size: 10px; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+.student { display: flex; align-items: center; gap: 9px; }
+.student-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e5f2e9; color: var(--green); display: grid; place-items: center; font-weight: 800; font-family: 'DM Sans', sans-serif; }
+.student-name { font-size: 10px; font-weight: 800; color: var(--ink); font-family: 'DM Sans', sans-serif; }
+.student-class { font-size: 9px; color: var(--muted); margin-top: 3px; font-family: 'DM Sans', sans-serif; }
+.mini-track { width: 75px; height: 6px; border-radius: 10px; background: #edf1ee; overflow: hidden; }
+.mini-track div { height: 100%; border-radius: 10px; background: var(--green2); }
+.progress-number { font-size: 9px; color: var(--muted); margin-top: 4px; font-family: 'DM Sans', sans-serif; }
+.status-badge-new { display: inline-block; border-radius: 20px; padding: 5px 8px; font-size: 9px; font-weight: 800; font-family: 'DM Sans', sans-serif; }
+.status-badge-new.active { background: #e4f5eb; color: #26784e; }
+.status-badge-new.risk { background: #ffeded; color: #bd5555; }
+.status-badge-new.graduated { background: #e8efff; color: #376bc0; }
+.view-btn { border: 0; background: var(--green); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.view-btn:hover { background: var(--green2); }
+.view-all-btn { border: 0; background: #e8f5ed; color: var(--green); padding: 8px 11px; border-radius: 7px; font-size: 10px; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.lesson-row { margin: 17px 0; }
+.lesson-label { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 7px; font-family: 'DM Sans', sans-serif; }
+.lesson-label strong { font-weight: 700; color: var(--ink); }
+.lesson-label span { color: var(--green); font-weight: 800; }
+.lesson-track { height: 7px; border-radius: 10px; background: #edf1ee; overflow: hidden; }
+.lesson-track div { height: 100%; background: linear-gradient(90deg, #246b4b, #56b486); border-radius: 10px; }
+.lesson-sub { font-size: 9px; color: var(--muted); margin-top: 5px; font-family: 'DM Sans', sans-serif; }
+.empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 11px; font-family: 'DM Sans', sans-serif; }
+@media(max-width: 1100px) {
+    .stats-new { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .filter-grid { grid-template-columns: 1fr 1fr; }
+    .chart-grid-new, .bottom-grid-new { grid-template-columns: 1fr; }
+}
+@media(max-width: 700px) {
+    .filter-grid { grid-template-columns: 1fr; }
+    .stats-new { gap: 9px; }
+    .stat-new { padding: 13px; }
+    .stat-value { font-size: 24px; }
+}
+</style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
@@ -696,139 +774,176 @@ function showStudentDetail(id) {
 }
 function closeStudentDetailModal() { document.getElementById('studentDetailModal').classList.add('hidden'); }
 
+let dashClassFilter = 'all';
+let dashStatusFilter = 'all';
+let dashSearchQuery = '';
+
 function renderDashboard(c) {
     if (activeInsightStudentId && students[activeInsightStudentId]) {
         renderStudentInsight(c, activeInsightStudentId);
-    } else {
-        renderMainDashboard(c);
+        return;
     }
-}
 
-function renderMainDashboard(c) {
-    const total = Object.keys(students).length;
-    const grad = Object.entries(students).filter(([id]) => LESSONS.filter(l => isLessonCompleted((progress[id]||{})[l])).length === LESSONS.length).length;
-    let totalLessons = 0; Object.keys(students).forEach(id => totalLessons += getStudentProgress(id));
-    const initial = (userData?.name || currentUser.email).charAt(0).toUpperCase();
-    const recent = Object.entries(students).sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
-    
-    c.innerHTML = `<div class="dashboard-container">
-        <div class="welcome-header">
-            <div class="avatar-circle avatar-lg">${initial}</div>
-            <div><h1 class="text-2xl font-bold">Welcome Back!</h1><p class="text-gray-500">Kingdom Seekers Fellowship</p></div>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card-modern"><div class="stat-icon teal"><i class="fas fa-users"></i></div><div class="stat-value">${total}</div><div class="stat-label">Total Students</div></div>
-            <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-user-check"></i></div><div class="stat-value">${grad}</div><div class="stat-label">Graduated</div></div>
-            <div class="stat-card-modern"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-value">${totalLessons}</div><div class="stat-label">Lessons Completed</div></div>
-        </div>
-        <div class="dashboard-content">
-            <div class="task-list-container">
-                <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Recent Students</h2><button onclick="navigateTo('reports')" class="btn btn-primary">View All</button></div>
-                <table class="task-table"><thead><tr><th>Name</th><th>Progress</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody>${recent.length === 0 ? '<tr><td colspan="4" class="text-center py-8 text-gray-500">No students</td></tr>' : recent.map(([id, s]) => {
-                    const comp = getStudentProgress(id), pct = Math.round((comp/LESSONS.length)*100), stat = s.graduationDate ? 'graduated' : (isAtRisk(id) ? 'at-risk' : 'active'),
-                    statClass = stat === 'graduated' ? 'status-graduated' : (stat === 'at-risk' ? 'status-at-risk' : 'status-active'),
-                    statText = stat === 'graduated' ? 'Graduated' : (stat === 'at-risk' ? 'At Risk' : 'Active'),
-                    color = pct === 100 ? '#10b981' : (pct >= 50 ? '#f59e0b' : '#ef4444');
-                    return `<tr><td><div class="student-info"><div class="avatar-circle avatar-sm">${s.name.charAt(0).toUpperCase()}</div><div><div class="font-semibold">${s.name}</div><div class="text-xs text-gray-500">Class ${s.class}</div></div></div></td>
-                    <td><div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="text-xs text-gray-500">${comp}/${LESSONS.length}</div></td>
-                    <td><span class="status-badge ${statClass}">${statText}</span></td>
-                    <td><button class="action-btn primary" onclick="selectStudentForInsight('${id}')">View</button></td></tr>`;
-                }).join('')}</tbody></table>
-            </div>
-            <div class="schedule-container">
-                <h2 class="text-xl font-bold mb-4">Lesson Progress</h2>
-                ${LESSONS.slice(0,6).map((l, i) => {
-                    const lp = Object.entries(students).filter(([id]) => isLessonCompleted((progress[id]||{})[l])).length,
-                    rate = total > 0 ? Math.round((lp/total)*100) : 0,
-                    cls = rate === 100 ? 'completed' : (rate >= 50 ? 'pending' : '');
-                    return `<div class="schedule-item ${cls}"><div class="text-xs text-gray-500">${9+i}:00</div><div class="font-semibold">${l}</div><div class="text-xs text-gray-500">${lp} students (${rate}%)</div></div>`;
-                }).join('')}
-            </div>
-        </div>
-    </div>`;
-}
+    const filteredStudents = Object.entries(students).filter(([id, s]) => {
+        const classMatch = dashClassFilter === 'all' || s.class.toString() === dashClassFilter;
+        let statusMatch = true;
+        if (dashStatusFilter === 'Active') statusMatch = !s.graduationDate && !isAtRisk(id);
+        else if (dashStatusFilter === 'At Risk') statusMatch = isAtRisk(id) && !s.graduationDate;
+        else if (dashStatusFilter === 'Graduated') statusMatch = !!s.graduationDate;
+        
+        const searchMatch = dashSearchQuery === '' || 
+            s.name.toLowerCase().includes(dashSearchQuery) || 
+            s.phone.includes(dashSearchQuery) ||
+            s.class.toString().includes(dashSearchQuery);
+            
+        return classMatch && statusMatch && searchMatch;
+    });
 
-function renderStudentInsight(c, id) {
-    const s = students[id];
-    if (!s) return;
-    const p = progress[id] || {};
-    const comp = getStudentProgress(id);
-    const pct = Math.round((comp/LESSONS.length)*100);
-    
+    const total = filteredStudents.length;
+    const grad = filteredStudents.filter(([id, s]) => !!s.graduationDate).length;
+    const risk = filteredStudents.filter(([id, s]) => isAtRisk(id) && !s.graduationDate).length;
+    let totalLessons = 0;
+    filteredStudents.forEach(([id]) => { totalLessons += getStudentProgress(id); });
+
+    const classes = [...new Set(Object.values(students).map(s => s.class.toString()))].sort();
+
     c.innerHTML = `
-        <div class="dashboard-container">
-            <div class="insight-header">
-                <div class="flex items-center gap-4">
-                    <div class="avatar-circle avatar-lg">${s.name.charAt(0).toUpperCase()}</div>
-                    <div>
-                        <h1 class="text-2xl font-bold">${s.name}</h1>
-                        <p class="text-gray-500">Class ${s.class} • ${s.phone}</p>
+    <div class="dashboard-container-new">
+        <header class="topbar-new">
+            <div class="page-title"><h1>Dashboard Overview</h1><p>Welcome back. Here's what's happening in discipleship.</p></div>
+        </header>
+
+        <section class="filters-new">
+            <div class="filter-heading"><i class="fa-solid fa-sliders"></i> Dashboard filters</div>
+            <div class="filter-grid">
+                <div class="field"><label>CLASS</label>
+                    <select id="dashClassFilter" onchange="updateDashFilters()">
+                        <option value="all" ${dashClassFilter==='all'?'selected':''}>All classes</option>
+                        ${classes.map(cl => `<option value="${cl}" ${dashClassFilter===cl?'selected':''}>${cl}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="field"><label>STUDENT STATUS</label>
+                    <select id="dashStatusFilter" onchange="updateDashFilters()">
+                        <option value="all" ${dashStatusFilter==='all'?'selected':''}>All statuses</option>
+                        <option value="Active" ${dashStatusFilter==='Active'?'selected':''}>Active</option>
+                        <option value="At Risk" ${dashStatusFilter==='At Risk'?'selected':''}>At Risk</option>
+                        <option value="Graduated" ${dashStatusFilter==='Graduated'?'selected':''}>Graduated</option>
+                    </select>
+                </div>
+                <div class="field"><label>SEARCH STUDENTS</label>
+                    <div class="search-new">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="dashSearchInput" placeholder="Search by name, phone, or class..." value="${dashSearchQuery}" oninput="updateDashSearch(this.value)">
                     </div>
                 </div>
-                <button onclick="clearStudentInsight()" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Back to Overview</button>
+                <button class="reset-new" onclick="resetDashFilters()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
             </div>
-            
-            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
-                <div class="stat-card-modern"><div class="stat-icon teal"><i class="fas fa-chart-line"></i></div><div class="stat-value">${pct}%</div><div class="stat-label">Overall Progress</div></div>
-                <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-book"></i></div><div class="stat-value">${comp}/${LESSONS.length}</div><div class="stat-label">Lessons Done</div></div>
-                <div class="stat-card-modern"><div class="stat-icon green"><i class="fas fa-calendar-check"></i></div><div class="stat-value">-</div><div class="stat-label">Attendance</div></div>
-                <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-award"></i></div><div class="stat-value">${s.graduationDate ? 'Yes' : 'No'}</div><div class="stat-label">Graduated</div></div>
-            </div>
+        </section>
 
-            <div class="insight-grid">
-                <div class="chart-container">
-                    <h3 class="font-bold mb-4">Lesson Completion Journey</h3>
-                    <canvas id="studentRadarChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3 class="font-bold mb-4">Progress Breakdown</h3>
-                    <canvas id="studentDoughnutChart"></canvas>
-                </div>
-            </div>
-        </div>
+        <section class="stats-new">
+            <article class="stat-new"><div class="stat-top"><div class="stat-icon teal"><i class="fa-solid fa-users"></i></div><span class="stat-tag">STUDENT RECORDS</span></div><div class="stat-value">${total}</div><div class="stat-label">Total Students</div></article>
+            <article class="stat-new"><div class="stat-top"><div class="stat-icon blue"><i class="fa-solid fa-user-graduate"></i></div><span class="stat-tag">COMPLETION</span></div><div class="stat-value">${grad}</div><div class="stat-label">Graduated</div></article>
+            <article class="stat-new"><div class="stat-top"><div class="stat-icon amber"><i class="fa-solid fa-book-open"></i></div><span class="stat-tag">LEARNING ACTIVITY</span></div><div class="stat-value">${totalLessons.toLocaleString()}</div><div class="stat-label">Lessons Completed</div></article>
+            <article class="stat-new"><div class="stat-top"><div class="stat-icon rose"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="stat-tag">NEEDS ATTENTION</span></div><div class="stat-value">${risk}</div><div class="stat-label">Students At Risk</div></article>
+        </section>
+
+        <section class="chart-grid-new">
+            <article class="panel-new"><div class="panel-head"><div><h2>Lesson Completion Activity</h2><p>Number of students completing each lesson</p></div><div class="panel-icon"><i class="fa-solid fa-chart-column"></i></div></div><div class="chart-wrap"><canvas id="dashLessonChart"></canvas></div></article>
+            <article class="panel-new"><div class="panel-head"><div><h2>Student Status</h2><p>Distribution by current progress status</p></div><div class="panel-icon"><i class="fa-solid fa-chart-pie"></i></div></div><div class="donut-wrap"><canvas id="dashStatusChart"></canvas></div></article>
+        </section>
+
+        <section class="bottom-grid-new">
+            <article class="panel-new"><div class="panel-head"><div><h2>Recent Students</h2><p>Recently updated student records</p></div><button class="view-all-btn" onclick="navigateTo('reports')">View all <i class="fa-solid fa-arrow-right"></i></button></div><div class="table-wrap"><table class="students-new"><thead><tr><th>Student</th><th>Progress</th><th>Status</th><th>Action</th></tr></thead><tbody id="dashStudentRows"></tbody></table></div></article>
+            <article class="panel-new"><div class="panel-head"><div><h2>Lesson Performance</h2><p>Completion rate by discipleship lesson</p></div><div class="panel-icon"><i class="fa-solid fa-list-check"></i></div></div><div id="dashLessonPerformance"></div></article>
+        </section>
+    </div>
     `;
 
-    // Initialize Charts after DOM is updated
+    // Populate table
+    const recent = filteredStudents.sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
+    const tbody = document.getElementById('dashStudentRows');
+    if (recent.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No students match these filters.</td></tr>';
+    } else {
+        tbody.innerHTML = recent.map(([id, s]) => {
+            const comp = getStudentProgress(id);
+            const pct = Math.round((comp/LESSONS.length)*100);
+            const stat = s.graduationDate ? 'Graduated' : (isAtRisk(id) ? 'At Risk' : 'Active');
+            const cl = stat === 'Graduated' ? 'graduated' : (stat === 'At Risk' ? 'risk' : 'active');
+            return `<tr>
+                <td><div class="student"><div class="student-avatar">${s.name.charAt(0).toUpperCase()}</div><div><div class="student-name">${s.name}</div><div class="student-class">Class ${s.class}</div></div></div></td>
+                <td><div class="mini-track"><div style="width:${pct}%"></div></div><div class="progress-number">${comp}/${LESSONS.length} lessons · ${pct}%</div></td>
+                <td><span class="status-badge-new ${cl}">${stat}</span></td>
+                <td><button class="view-btn" onclick="selectStudentForInsight('${id}')">View</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Populate lesson performance
+    const lessonPerf = document.getElementById('dashLessonPerformance');
+    lessonPerf.innerHTML = LESSONS.slice(0, 8).map((name, i) => {
+        const n = filteredStudents.filter(([id]) => isLessonCompleted((progress[id]||{})[name])).length;
+        const pct = total ? Math.round((n / total) * 100) : 0;
+        return `<div class="lesson-row"><div class="lesson-label"><strong>${name}</strong><span>${pct}%</span></div><div class="lesson-track"><div style="width:${pct}%"></div></div><div class="lesson-sub">${n} of ${total} students completed</div></div>`;
+    }).join('') || '<div class="empty-state">No lesson data available.</div>';
+
+    // Initialize Charts
     setTimeout(() => {
         if (typeof Chart !== 'undefined') {
-            // Radar Chart for Lessons
-            const radarCtx = document.getElementById('studentRadarChart');
-            if (radarCtx) {
-                new Chart(radarCtx, {
-                    type: 'radar',
-                    data: {
-                        labels: LESSONS.slice(0, 8), // Show first 8 for clarity
-                        datasets: [{
-                            label: 'Completed',
-                            data: LESSONS.slice(0, 8).map(l => isLessonCompleted(p[l]) ? 100 : 0),
-                            backgroundColor: 'rgba(45, 106, 79, 0.2)',
-                            borderColor: '#2d6a4f',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100 } } }
-                });
-            }
+            const common = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+            
+            const lessonCounts = LESSONS.map(l => filteredStudents.filter(([id]) => isLessonCompleted((progress[id]||{})[l])).length);
+            const ctx1 = document.getElementById('dashLessonChart');
+            if (window.dashLessonChartInstance) window.dashLessonChartInstance.destroy();
+            window.dashLessonChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: LESSONS.map(x => x.length > 12 ? x.slice(0, 11) + '…' : x),
+                    datasets: [{ label: 'Completed', data: lessonCounts, backgroundColor: '#36966c', borderRadius: 5, barThickness: 9 }]
+                },
+                options: {
+                    ...common,
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 9, family: 'DM Sans' }, color: '#829087', maxRotation: 35, minRotation: 0 } },
+                        y: { beginAtZero: true, grid: { color: '#edf1ee', borderDash: [4, 4] }, ticks: { precision: 0, font: { size: 9, family: 'DM Sans' }, color: '#829087' } }
+                    }
+                }
+            });
 
-            // Doughnut Chart for Progress
-            const doughnutCtx = document.getElementById('studentDoughnutChart');
-            if (doughnutCtx) {
-                new Chart(doughnutCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Completed', 'Remaining'],
-                        datasets: [{
-                            data: [comp, LESSONS.length - comp],
-                            backgroundColor: ['#10b981', '#e5e7eb'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
-                });
-            }
+            const ctx2 = document.getElementById('dashStatusChart');
+            if (window.dashStatusChartInstance) window.dashStatusChartInstance.destroy();
+            window.dashStatusChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'At Risk', 'Graduated'],
+                    datasets: [{
+                        data: [total - grad - risk, risk, grad],
+                        backgroundColor: ['#36966c', '#e87575', '#4389e8'],
+                        borderWidth: 4, borderColor: '#fff', hoverOffset: 5
+                    }]
+                },
+                options: { ...common, cutout: '72%' }
+            });
         }
     }, 100);
+}
+
+function updateDashFilters() {
+    dashClassFilter = document.getElementById('dashClassFilter').value;
+    dashStatusFilter = document.getElementById('dashStatusFilter').value;
+    renderDashboard(document.getElementById('contentArea'));
+}
+
+function updateDashSearch(val) {
+    dashSearchQuery = val.trim().toLowerCase();
+    renderDashboard(document.getElementById('contentArea'));
+}
+
+function resetDashFilters() {
+    dashClassFilter = 'all';
+    dashStatusFilter = 'all';
+    dashSearchQuery = '';
+    renderDashboard(document.getElementById('contentArea'));
 }
 
 
