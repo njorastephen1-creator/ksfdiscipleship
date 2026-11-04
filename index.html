@@ -590,14 +590,49 @@ function navigateTo(view) {
 }
 
 window.onload = function() {
-    initDarkMode(); // Initialize dark mode immediately
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('exam')) { showPublicExam(urlParams.get('exam')); return; }
-    if (urlParams.get('caregroup') === 'signup') { showPublicCareGroup(); return; }
-    setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 500);
-    initApp();
-    registerServiceWorker();
-    setupPWAInstall();
+    console.log('App starting...');
+    initDarkMode();
+    
+    // Force hide splash after 2 seconds no matter what to prevent getting stuck
+    setTimeout(() => {
+        const splash = document.getElementById('splash');
+        if (splash) {
+            console.log('Forcing splash screen hide');
+            splash.style.display = 'none';
+        }
+    }, 2000);
+    
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('exam')) { 
+            console.log('Loading exam');
+            showPublicExam(urlParams.get('exam')); 
+            return; 
+        }
+        if (urlParams.get('caregroup') === 'signup') { 
+            console.log('Loading care group');
+            showPublicCareGroup(); 
+            return; 
+        }
+
+        console.log('Initializing app...');
+        initApp();
+        registerServiceWorker();
+        setupPWAInstall();
+    } catch (error) {
+        console.error('CRITICAL ERROR in window.onload:', error);
+        const splash = document.getElementById('splash');
+        if (splash) {
+            splash.innerHTML = `
+                <div style="padding: 50px; text-align: center; color: white; font-family: sans-serif;">
+                    <h2 style="color: #ff6b6b; margin-bottom: 20px;">Error Loading App</h2>
+                    <p style="margin-bottom: 20px; word-break: break-all;">${error.message}</p>
+                    <p style="font-size: 12px; opacity: 0.8;">Check browser console (F12) for details</p>
+                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #4ecdc4; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold;">Retry</button>
+                </div>
+            `;
+        }
+    }
 };
 
 function showPublicExam(examId) {
