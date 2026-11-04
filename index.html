@@ -814,173 +814,46 @@ let dashStatusFilter = 'all';
 let dashSearchQuery = '';
 
 function renderDashboard(c) {
-    if (activeInsightStudentId && students[activeInsightStudentId]) {
-        renderStudentInsight(c, activeInsightStudentId);
-        return;
-    }
-
-    const filteredStudents = Object.entries(students).filter(([id, s]) => {
-        const classMatch = dashClassFilter === 'all' || s.class.toString() === dashClassFilter;
-        let statusMatch = true;
-        if (dashStatusFilter === 'Active') statusMatch = !s.graduationDate && !isAtRisk(id);
-        else if (dashStatusFilter === 'At Risk') statusMatch = isAtRisk(id) && !s.graduationDate;
-        else if (dashStatusFilter === 'Graduated') statusMatch = !!s.graduationDate;
-        
-        const searchMatch = dashSearchQuery === '' || 
-            s.name.toLowerCase().includes(dashSearchQuery) || 
-            s.phone.includes(dashSearchQuery) ||
-            s.class.toString().includes(dashSearchQuery);
-            
-        return classMatch && statusMatch && searchMatch;
-    });
-
-    const total = filteredStudents.length;
-    const grad = filteredStudents.filter(([id, s]) => !!s.graduationDate).length;
-    const risk = filteredStudents.filter(([id, s]) => isAtRisk(id) && !s.graduationDate).length;
-    let totalLessons = 0;
-    filteredStudents.forEach(([id]) => { totalLessons += getStudentProgress(id); });
-
-    const classes = [...new Set(Object.values(students).map(s => s.class.toString()))].sort();
-
-    c.innerHTML = `
-    <div class="dashboard-container-new">
-        <header class="topbar-new">
-            <div class="page-title"><h1>Dashboard Overview</h1><p>Welcome back. Here's what's happening in discipleship.</p></div>
-        </header>
-
-        <section class="filters-new">
-            <div class="filter-heading"><i class="fa-solid fa-sliders"></i> Dashboard filters</div>
-            <div class="filter-grid">
-                <div class="field"><label>CLASS</label>
-                    <select id="dashClassFilter" onchange="updateDashFilters()">
-                        <option value="all" ${dashClassFilter==='all'?'selected':''}>All classes</option>
-                        ${classes.map(cl => `<option value="${cl}" ${dashClassFilter===cl?'selected':''}>${cl}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="field"><label>STUDENT STATUS</label>
-                    <select id="dashStatusFilter" onchange="updateDashFilters()">
-                        <option value="all" ${dashStatusFilter==='all'?'selected':''}>All statuses</option>
-                        <option value="Active" ${dashStatusFilter==='Active'?'selected':''}>Active</option>
-                        <option value="At Risk" ${dashStatusFilter==='At Risk'?'selected':''}>At Risk</option>
-                        <option value="Graduated" ${dashStatusFilter==='Graduated'?'selected':''}>Graduated</option>
-                    </select>
-                </div>
-                <div class="field"><label>SEARCH STUDENTS</label>
-                    <div class="search-new">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input id="dashSearchInput" placeholder="Search by name, phone, or class..." value="${dashSearchQuery}" oninput="updateDashSearch(this.value)">
-                    </div>
-                </div>
-                <button class="reset-new" onclick="resetDashFilters()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+    const total = Object.keys(students).length, grad = Object.entries(students).filter(([id]) => LESSONS.filter(l => isLessonCompleted((progress[id]||{})[l])).length === LESSONS.length).length;
+    let totalLessons = 0; Object.keys(students).forEach(id => totalLessons += getStudentProgress(id));
+    const initial = (userData?.name || currentUser.email).charAt(0).toUpperCase(), recent = Object.entries(students).sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
+    c.innerHTML = `<div class="dashboard-container">
+        <div class="welcome-header">
+            <div class="avatar-circle avatar-lg">${initial}</div>
+            <div><h1 class="text-2xl font-bold">Welcome Back!</h1><p class="text-gray-500">Kingdom Seekers Fellowship</p></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card-modern"><div class="stat-icon teal"><i class="fas fa-users"></i></div><div class="stat-value">${total}</div><div class="stat-label">Total Students</div></div>
+            <div class="stat-card-modern"><div class="stat-icon blue"><i class="fas fa-user-check"></i></div><div class="stat-value">${grad}</div><div class="stat-label">Graduated</div></div>
+            <div class="stat-card-modern"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-value">${totalLessons}</div><div class="stat-label">Lessons Completed</div></div>
+        </div>
+        <div class="dashboard-content">
+            <div class="task-list-container">
+                <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Recent Students</h2><button onclick="navigateTo('reports')" class="btn btn-primary">View All</button></div>
+                <table class="task-table"><thead><tr><th>Name</th><th>Progress</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>${recent.length === 0 ? '<tr><td colspan="4" class="text-center py-8 text-gray-500">No students</td></tr>' : recent.map(([id, s]) => {
+                    const comp = getStudentProgress(id), pct = Math.round((comp/LESSONS.length)*100), stat = s.graduationDate ? 'graduated' : (isAtRisk(id) ? 'at-risk' : 'active'),
+                    statClass = stat === 'graduated' ? 'status-graduated' : (stat === 'at-risk' ? 'status-at-risk' : 'status-active'),
+                    statText = stat === 'graduated' ? 'Graduated' : (stat === 'at-risk' ? 'At Risk' : 'Active'),
+                    color = pct === 100 ? '#10b981' : (pct >= 50 ? '#f59e0b' : '#ef4444');
+                    return `<tr><td><div class="student-info"><div class="avatar-circle avatar-sm">${s.name.charAt(0).toUpperCase()}</div><div><div class="font-semibold">${s.name}</div><div class="text-xs text-gray-500">Class ${s.class}</div></div></div></td>
+                    <td><div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="text-xs text-gray-500">${comp}/${LESSONS.length}</div></td>
+                    <td><span class="status-badge ${statClass}">${statText}</span></td>
+                    <td><button class="action-btn primary" onclick="editingStudentId='${id}';showView('dataEntry')">View</button></td></tr>`;
+                }).join('')}</tbody></table>
             </div>
-        </section>
-
-        <section class="stats-new">
-            <article class="stat-new"><div class="stat-top"><div class="stat-icon teal"><i class="fa-solid fa-users"></i></div><span class="stat-tag">STUDENT RECORDS</span></div><div class="stat-value">${total}</div><div class="stat-label">Total Students</div></article>
-            <article class="stat-new"><div class="stat-top"><div class="stat-icon blue"><i class="fa-solid fa-user-graduate"></i></div><span class="stat-tag">COMPLETION</span></div><div class="stat-value">${grad}</div><div class="stat-label">Graduated</div></article>
-            <article class="stat-new"><div class="stat-top"><div class="stat-icon amber"><i class="fa-solid fa-book-open"></i></div><span class="stat-tag">LEARNING ACTIVITY</span></div><div class="stat-value">${totalLessons.toLocaleString()}</div><div class="stat-label">Lessons Completed</div></article>
-            <article class="stat-new"><div class="stat-top"><div class="stat-icon rose"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="stat-tag">NEEDS ATTENTION</span></div><div class="stat-value">${risk}</div><div class="stat-label">Students At Risk</div></article>
-        </section>
-
-        <section class="chart-grid-new">
-            <article class="panel-new"><div class="panel-head"><div><h2>Lesson Completion Activity</h2><p>Number of students completing each lesson</p></div><div class="panel-icon"><i class="fa-solid fa-chart-column"></i></div></div><div class="chart-wrap"><canvas id="dashLessonChart"></canvas></div></article>
-            <article class="panel-new"><div class="panel-head"><div><h2>Student Status</h2><p>Distribution by current progress status</p></div><div class="panel-icon"><i class="fa-solid fa-chart-pie"></i></div></div><div class="donut-wrap"><canvas id="dashStatusChart"></canvas></div></article>
-        </section>
-
-        <section class="bottom-grid-new">
-            <article class="panel-new"><div class="panel-head"><div><h2>Recent Students</h2><p>Recently updated student records</p></div><button class="view-all-btn" onclick="navigateTo('reports')">View all <i class="fa-solid fa-arrow-right"></i></button></div><div class="table-wrap"><table class="students-new"><thead><tr><th>Student</th><th>Progress</th><th>Status</th><th>Action</th></tr></thead><tbody id="dashStudentRows"></tbody></table></div></article>
-            <article class="panel-new"><div class="panel-head"><div><h2>Lesson Performance</h2><p>Completion rate by discipleship lesson</p></div><div class="panel-icon"><i class="fa-solid fa-list-check"></i></div></div><div id="dashLessonPerformance"></div></article>
-        </section>
-    </div>
-    `;
-
-    // Populate table
-    const recent = filteredStudents.sort((a,b) => (b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0, 8);
-    const tbody = document.getElementById('dashStudentRows');
-    if (recent.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No students match these filters.</td></tr>';
-    } else {
-        tbody.innerHTML = recent.map(([id, s]) => {
-            const comp = getStudentProgress(id);
-            const pct = Math.round((comp/LESSONS.length)*100);
-            const stat = s.graduationDate ? 'Graduated' : (isAtRisk(id) ? 'At Risk' : 'Active');
-            const cl = stat === 'Graduated' ? 'graduated' : (stat === 'At Risk' ? 'risk' : 'active');
-            return `<tr>
-                <td><div class="student"><div class="student-avatar">${s.name.charAt(0).toUpperCase()}</div><div><div class="student-name">${s.name}</div><div class="student-class">Class ${s.class}</div></div></div></td>
-                <td><div class="mini-track"><div style="width:${pct}%"></div></div><div class="progress-number">${comp}/${LESSONS.length} lessons · ${pct}%</div></td>
-                <td><span class="status-badge-new ${cl}">${stat}</span></td>
-                <td><button class="view-btn" onclick="selectStudentForInsight('${id}')">View</button></td>
-            </tr>`;
-        }).join('');
-    }
-
-    // Populate lesson performance
-    const lessonPerf = document.getElementById('dashLessonPerformance');
-    lessonPerf.innerHTML = LESSONS.slice(0, 8).map((name, i) => {
-        const n = filteredStudents.filter(([id]) => isLessonCompleted((progress[id]||{})[name])).length;
-        const pct = total ? Math.round((n / total) * 100) : 0;
-        return `<div class="lesson-row"><div class="lesson-label"><strong>${name}</strong><span>${pct}%</span></div><div class="lesson-track"><div style="width:${pct}%"></div></div><div class="lesson-sub">${n} of ${total} students completed</div></div>`;
-    }).join('') || '<div class="empty-state">No lesson data available.</div>';
-
-    // Initialize Charts
-    setTimeout(() => {
-        if (typeof Chart !== 'undefined') {
-            const common = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-            
-            const lessonCounts = LESSONS.map(l => filteredStudents.filter(([id]) => isLessonCompleted((progress[id]||{})[l])).length);
-            const ctx1 = document.getElementById('dashLessonChart');
-            if (window.dashLessonChartInstance) window.dashLessonChartInstance.destroy();
-            window.dashLessonChartInstance = new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: LESSONS.map(x => x.length > 12 ? x.slice(0, 11) + '…' : x),
-                    datasets: [{ label: 'Completed', data: lessonCounts, backgroundColor: '#36966c', borderRadius: 5, barThickness: 9 }]
-                },
-                options: {
-                    ...common,
-                    scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 9, family: 'DM Sans' }, color: '#829087', maxRotation: 35, minRotation: 0 } },
-                        y: { beginAtZero: true, grid: { color: '#edf1ee', borderDash: [4, 4] }, ticks: { precision: 0, font: { size: 9, family: 'DM Sans' }, color: '#829087' } }
-                    }
-                }
-            });
-
-            const ctx2 = document.getElementById('dashStatusChart');
-            if (window.dashStatusChartInstance) window.dashStatusChartInstance.destroy();
-            window.dashStatusChartInstance = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active', 'At Risk', 'Graduated'],
-                    datasets: [{
-                        data: [total - grad - risk, risk, grad],
-                        backgroundColor: ['#36966c', '#e87575', '#4389e8'],
-                        borderWidth: 4, borderColor: '#fff', hoverOffset: 5
-                    }]
-                },
-                options: { ...common, cutout: '72%' }
-            });
-        }
-    }, 100);
+            <div class="schedule-container">
+                <h2 class="text-xl font-bold mb-4">Lesson Progress</h2>
+                ${LESSONS.slice(0,6).map((l, i) => {
+                    const lp = Object.entries(students).filter(([id]) => isLessonCompleted((progress[id]||{})[l])).length,
+                    rate = total > 0 ? Math.round((lp/total)*100) : 0,
+                    cls = rate === 100 ? 'completed' : (rate >= 50 ? 'pending' : '');
+                    return `<div class="schedule-item ${cls}"><div class="text-xs text-gray-500">${9+i}:00</div><div class="font-semibold">${l}</div><div class="text-xs text-gray-500">${lp} students (${rate}%)</div></div>`;
+                }).join('')}
+            </div>
+        </div>
+    </div>`;
 }
-
-function updateDashFilters() {
-    dashClassFilter = document.getElementById('dashClassFilter').value;
-    dashStatusFilter = document.getElementById('dashStatusFilter').value;
-    renderDashboard(document.getElementById('contentArea'));
-}
-
-function updateDashSearch(val) {
-    dashSearchQuery = val.trim().toLowerCase();
-    renderDashboard(document.getElementById('contentArea'));
-}
-
-function resetDashFilters() {
-    dashClassFilter = 'all';
-    dashStatusFilter = 'all';
-    dashSearchQuery = '';
-    renderDashboard(document.getElementById('contentArea'));
-}
-
 
 function renderDataEntry(c) {
     const next = getNextClassNumber(), today = new Date().toISOString().split('T')[0];
